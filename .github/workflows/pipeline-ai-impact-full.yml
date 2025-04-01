@@ -247,7 +247,7 @@ jobs:
           add-paths: |
               ./**/*.java
               ./**/*.md
-          token: ${{ secrets.PAT_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           labels: "auto-generated, testes"
           draft: false
 
