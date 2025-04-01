@@ -322,8 +322,8 @@ jobs:
             --form 'SastIssueTypes[]="VULNERABILITY"' \
             --form 'SastIssueTypes[]="CODE_SMELL"' \
             --form 'Vcs[0][Name]="Codefixer"' \
-            --form 'BranchName="develop"' \
-            --form 'BaseBranch="develop"' \
+            --form 'BranchName="codefixer"' \
+            --form 'BaseBranch="master"' \
             --form 'RepoName="${{ github.repository }}"' \
             --form 'CreatePullRequestPerFile="true"' )
           echo "API Response: $RESPONSE"
