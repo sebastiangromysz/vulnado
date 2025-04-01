@@ -265,7 +265,6 @@ jobs:
             --form 'PullRequestId="${{ steps.create-pr.outputs.pull-request-number }}"' \
             --form 'RepoName="${{github.repository}}"' \
             --form 'AdditionalInstructions=""' \
-            --form 'Vcs="GITHUB_GFT_AI_IMPACT/teste-integrado"' \
             --form 'Conventions="Header,Description,Summary,Recomendations,VulnExplanation"') 
           echo "API Response: $RESPONSE"
           JOB_ID=$(echo $RESPONSE)
