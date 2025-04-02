@@ -1,4 +1,4 @@
-name: AI Impact Full Pipeline
+name: AI Impact Full Pipeline - Obsolete
 
 on:
   workflow_dispatch:
