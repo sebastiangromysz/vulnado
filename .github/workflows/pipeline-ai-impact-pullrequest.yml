@@ -55,26 +55,17 @@ jobs:
           JOB_ID=$(echo $RESPONSE)
           echo "job_id=$JOB_ID" >> $GITHUB_ENV
 
-          - name: Monitor Code Review Job Status
-          id: monitor_code_review_status
-          run: |
-            JOB_ID=${{ env.job_id }}
-            STATUS="Pending"
-            while [[ "$STATUS" != "Completed" ]]; do
-              RESPONSE=$(curl --location "http://api.gftaiimpact.local/ai/jobs/$JOB_ID/status" \
-                --header "Authorization: Bearer ${{ env.access_token }}")
-              STATUS=$(echo $RESPONSE | jq -r '.status')
-              echo "Current status: $STATUS"
-              sleep 10
-            done
-            echo "Final status: $STATUS"
-            OUTPUT_URIS=$(echo "$RESPONSE" | jq -r '.results[].output[].uri')
-  
-            echo "job_response=$RESPONSE" >> "$GITHUB_ENV"
-  
-            {
-              echo "output_uris<<EOF"
-              echo "$OUTPUT_URIS"
-              echo "EOF"
-            } >> "$GITHUB_ENV"
+      - name: Monitor Code Review Job Status
+        id: monitor_code_review_status
+        run: |
+          JOB_ID=${{ env.job_id }}
+          STATUS="Pending"
+          while [[ "$STATUS" != "Completed" ]]; do
+            RESPONSE=$(curl --location "http://api.gftaiimpact.local/ai/jobs/$JOB_ID/status" \
+              --header "Authorization: Bearer ${{ env.access_token }}")
+            STATUS=$(echo $RESPONSE | jq -r '.status')
+            echo "Current status: $STATUS"
+            sleep 10
+          done
+          echo "Final status: $STATUS"
 
