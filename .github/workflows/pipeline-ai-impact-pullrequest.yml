@@ -1,4 +1,4 @@
-name: AI Impact Pull Request Trigger
+name: AI Impact CodeReviewer
 on:
   pull_request:
     branches:
@@ -11,7 +11,7 @@ permissions:
   repository-projects: write
 
 jobs:
-  trigger_api:
+  ai_impact_code_reviewer:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
