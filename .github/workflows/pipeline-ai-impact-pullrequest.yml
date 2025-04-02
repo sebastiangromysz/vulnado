@@ -68,13 +68,4 @@ jobs:
               sleep 10
             done
             echo "Final status: $STATUS"
-            OUTPUT_URIS=$(echo "$RESPONSE" | jq -r '.results[].output[].uri')
-  
-            echo "job_response=$RESPONSE" >> "$GITHUB_ENV"
-  
-            {
-              echo "output_uris<<EOF"
-              echo "$OUTPUT_URIS"
-              echo "EOF"
-            } >> "$GITHUB_ENV"
 
