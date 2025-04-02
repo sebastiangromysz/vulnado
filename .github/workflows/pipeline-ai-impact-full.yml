@@ -235,13 +235,13 @@ jobs:
           git commit -m "Add generated Documentations and Unit Tests"
 #          git push --set-upstream origin ${{ github.event.pull_request.head.ref }}
 
-      - name: Criar Pull Request
+      - name: Create Pull Request
         id: create-pr
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "testes gerados pela AI Impact"
-          title: "testes unitários e documentações Automatizados"
-          body: "Esse PR contem Testes Unitários e Documentações gerados pela IA Impact."
+          commit-message: "AI Impact documentation and Unit Tests"
+          title: "Documentation and Unit Tests created by IA Impact"
+          body: "Pull request created by IA Impact CodeDocumenter and CodeTester."
           branch: "tester-by-ai"
           delete-branch: true
           add-paths: |
