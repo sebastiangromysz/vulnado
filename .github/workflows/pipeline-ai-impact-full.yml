@@ -213,22 +213,7 @@ jobs:
           git add .
           git commit -m "Add generated Documentations and Unit Tests"
 
-      - name: Create Pull Request
-        id: create-pr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          commit-message: "AI Impact documentation and Unit Tests"
-          title: "Documentation and Unit Tests created by IA Impact"
-          body: "Pull request created by IA Impact CodeDocumenter and CodeTester."
-          branch: "tester-by-ai"
-          delete-branch: true
-          add-paths: |
-              ./**/*.java
-              ./**/*.md
-          token: ${{ secrets.GITHUB_TOKEN }}
-          labels: "auto-generated, testes"
-          draft: false
-
+ 
       - name: Prepare and Send for Code Fix
         id: monitor_code_fix_status
         run: |
