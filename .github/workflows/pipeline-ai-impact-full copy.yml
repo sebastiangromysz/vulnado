@@ -1,4 +1,4 @@
-name: AI Impact Full Pipeline
+name: AI Impact Full Pipeline - Obsolete
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
   repository-projects: write
 
 jobs:
-  generate_tests_docs:
+  generate_tests:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
@@ -141,6 +141,17 @@ jobs:
             echo "$FILE_CONTENT" > "$TEST_FILE"
           done <<< "$OUTPUT_URIS"
 
+
+#      - name: Add Comment to Issue
+#        run: |
+#          COMMENT="Unit Tests generated and included in branch"
+#          ISSUE_NUMBER=${{ github.event.pull_request.number }}
+#          REPO=${{ github.repository }}
+#          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+#               -H "Accept: application/vnd.github.v3+json" \
+#               -d "{\"body\": \"${COMMENT}\"}" \
+#               https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER/comments
+
       - name: Prepare and Send to API (DocCreator)
         id: send_api2
         run: |
@@ -206,14 +217,82 @@ jobs:
             echo "$FILE_CONTENT" > "$DOC_FILE"
           done <<< "$OUTPUT_URIS"
 
+#      - name: Add Comment to Issue
+#        run: |
+#          COMMENT="Documents generated and included in the branch"
+#          ISSUE_NUMBER=${{ github.event.pull_request.number }}
+#          REPO=${{ github.repository }}
+#          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+#               -H "Accept: application/vnd.github.v3+json" \
+#               -d "{\"body\": \"${COMMENT}\"}" \
+#               https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER/comments
+
       - name: Commit and Push Documenter and Tests
         run: |
           git config --global user.name 'gft-ai-impact[bot]'
           git config --global user.email 'ai-impact[bot]@gft.com'
           git add .
           git commit -m "Add generated Documentations and Unit Tests"
+#          git push --set-upstream origin ${{ github.event.pull_request.head.ref }}
 
- 
+      - name: Create Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "AI Impact documentation and Unit Tests"
+          title: "Documentation and Unit Tests created by IA Impact"
+          body: "Pull request created by IA Impact CodeDocumenter and CodeTester."
+          branch: "tester-by-ai"
+          delete-branch: true
+          add-paths: |
+              ./**/*.java
+              ./**/*.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          labels: "auto-generated, testes"
+          draft: false
+
+          #            --form 'PullRequestId="${{ github.event.pull_request.number }}"' \
+      - name: Prepare and Send for Code Review
+        id: send_code_review
+        run: |
+          echo "Repositório: ${{github.repository}}"
+          RESPONSE=$(curl --location 'http://api.gftaiimpact.local/ai/review' \
+            --header "Authorization: Bearer ${{ env.access_token }}" \
+            --form 'RunName="CodeReview"' \
+            --form 'jobName="DemoCodeReviewerGithub"' \
+            --form 'PromptId="CodeReviewer__CodeReviewer_V1_Conventions"' \
+            --form 'Llm="${{ vars.LLM }}"' \
+            --form 'PullRequestId="${{ steps.create-pr.outputs.pull-request-number }}"' \
+            --form 'RepoName="${{github.repository}}"' \
+            --form 'AdditionalInstructions=""' \
+            --form 'Conventions="Header,Description,Summary,Recomendations,VulnExplanation"') 
+          echo "API Response: $RESPONSE"
+          JOB_ID=$(echo $RESPONSE)
+          echo "job_id=$JOB_ID" >> $GITHUB_ENV
+
+      - name: Monitor Code Review Job Status
+        id: monitor_code_review_status
+        run: |
+          JOB_ID=${{ env.job_id }}
+          STATUS="Pending"
+          while [[ "$STATUS" != "Completed" ]]; do
+            RESPONSE=$(curl --location "http://api.gftaiimpact.local/ai/jobs/$JOB_ID/status" \
+              --header "Authorization: Bearer ${{ env.access_token }}")
+            STATUS=$(echo $RESPONSE | jq -r '.status')
+            echo "Current status: $STATUS"
+            sleep 10
+          done
+          echo "Final status: $STATUS"
+          OUTPUT_URIS=$(echo "$RESPONSE" | jq -r '.results[].output[].uri')
+
+          echo "job_response=$RESPONSE" >> "$GITHUB_ENV"
+
+          {
+            echo "output_uris<<EOF"
+            echo "$OUTPUT_URIS"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
       - name: Prepare and Send for Code Fix
         id: monitor_code_fix_status
         run: |
