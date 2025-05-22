@@ -1,6 +1,5 @@
 package com.scalesec.vulnado;
 
-import org.apache.catalina.Server;
 import java.sql.*;
 import java.util.Date;
 import java.util.List;
@@ -8,14 +7,16 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Comment {
-  public String id, username, body;
-  public Timestamp created_on;
+  private String id;
+  private String username;
+  private Timestamp createdOn;
+  private String body;
 
-  public Comment(String id, String username, String body, Timestamp created_on) {
+  public Comment(String id, String username, String body, Timestamp createdOn) {
     this.id = id;
     this.username = username;
     this.body = body;
-    this.created_on = created_on;
+    this.createdOn = createdOn;
   }
 
   public static Comment create(String username, String body){
