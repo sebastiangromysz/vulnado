@@ -13,41 +13,53 @@ public class CommentsController {
   @Value("${app.secret}")
   private String secret;
 
-  @CrossOrigin(origins = "*")
-  @RequestMapping(value = "/comments", method = RequestMethod.GET, produces = "application/json")
+  @CrossOrigin(origins = "http://trustedwebsite.com")
+  @GetMapping(value = "/comments", produces = "application/json")
   List<Comment> comments(@RequestHeader(value="x-auth-token") String token) {
     User.assertAuth(secret, token);
     return Comment.fetch_all();
   }
 
-  @CrossOrigin(origins = "*")
-  @RequestMapping(value = "/comments", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+  @CrossOrigin(origins = "http://trustedwebsite.com")
+  @PostMapping(value = "/comments", produces = "application/json", consumes = "application/json")
   Comment createComment(@RequestHeader(value="x-auth-token") String token, @RequestBody CommentRequest input) {
     return Comment.create(input.username, input.body);
   }
 
-  @CrossOrigin(origins = "*")
-  @RequestMapping(value = "/comments/{id}", method = RequestMethod.DELETE, produces = "application/json")
+  @CrossOrigin(origins = "http://trustedwebsite.com")
+  @DeleteMapping(value = "/comments/{id}", produces = "application/json")
   Boolean deleteComment(@RequestHeader(value="x-auth-token") String token, @PathVariable("id") String id) {
     return Comment.delete(id);
   }
-}
 
 class CommentRequest implements Serializable {
-  public String username;
-  public String body;
+  private String username;
+  private String body;
+public String getUsername() {
 }
+return username;
 
+}
 @ResponseStatus(HttpStatus.BAD_REQUEST)
+public String getBody() {
 class BadRequest extends RuntimeException {
+return body;
   public BadRequest(String exception) {
+}
     super(exception);
+public void setUsername(String username) {
   }
+this.username = username;
+}
 }
 
+public void setBody(String body) {
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+this.body = body;
 class ServerError extends RuntimeException {
+}
   public ServerError(String exception) {
+}
     super(exception);
   }
 }
